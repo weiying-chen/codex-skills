@@ -9,7 +9,12 @@ description: Translate Chinese to natural English in VOICEOVER (vo) or SUPER (su
 Accept mode tokens case-insensitively in either format:
 - Single line: `$translation vo <text>` or `$translation sup <text>`
 - Separate line: a line containing only `vo` or `sup` before the text
-If no mode is provided, ask which mode to use.
+Sticky mode within the same chat:
+- If the user omits the mode but has explicitly set `vo` or `sup` earlier in this chat, reuse the most recently set mode.
+- Otherwise, if no mode is provided, choose the best fit:
+- Use `vo` for third-person narration, news-style facts, and scene description.
+- Use `sup` for first-person speech, quote-like lines, and anything that should read like an interview bite.
+If it's genuinely ambiguous, ask which mode the user wants.
 
 ## Shared Rules
 - Translate into smooth, natural, idiomatic English; rewrite freely for clarity and flow.
@@ -43,10 +48,14 @@ If no mode is provided, ask which mode to use.
 - Translate "姊妹們" as "the girls."
 - Translate "弱勢族群" as "low-income residents" or "underserved residents" (pick the more natural fit for the line).
 
-## MODE: VOICEOVER
-Rewrite the Chinese as a single, natural English TV news voice-over line. Prioritize broadcast fluency and spoken pacing over literal translation. Compress aggressively, remove procedural details, and summarize the event at a high level. The result should sound like a polished news script, not a translation. If a detail does not advance the main action or emotional takeaway, omit it.
+## MODE: VOICEOVER (vo)
+1. Draft for meaning (capture the full intent).
+2. Rewrite as original English TV news voice-over (spoken pacing; not literal).
+3. Compress aggressively into a single line; keep only key facts and the emotional takeaway.
+4. Final check: output only the line (no labels).
 
-## MODE: SUPER
-1. Rewrite the Chinese as a short, natural English interview soundbite. Prioritize spoken rhythm and emotional clarity over completeness. Simplify sentence structure, avoid formal phrasing, and let it sound like something a real person would say on camera. Omit details that feel explanatory rather than personal.
-2. Do NOT wrap the entire output in quotation marks. Quotation marks may only be used if they appear naturally inside the dialogue itself.
-3. Split that paragraph into subtitle lines, each under 55 characters, keeping all punctuation exactly as it appears in the translated paragraph.
+## MODE: SUPER (sup)
+1. Draft for meaning.
+2. Rewrite into a short, natural interview soundbite (spoken rhythm; not literal).
+3. Split into subtitle lines (each under 55 characters), preserving punctuation exactly.
+4. Final check: don’t wrap the whole output in quotation marks; output only the subtitle lines.
