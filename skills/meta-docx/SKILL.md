@@ -9,10 +9,10 @@ Use this skill when generating `meta_original.docx` from a `main.docx` in the `s
 
 ## Workflow
 
-1) Extract JSON from `main.docx`:
+1) Extract JSON from `main.docx` (generator code lives in `~/python/word/`):
 
 ```bash
-python meta/extract_meta_request.py --source <path/to/main.docx> --json-out <path/to/meta_filled.json>
+~/python/word/.venv/bin/python ~/python/word/meta/extract_meta_request.py --source <path/to/main.docx> --json-out <path/to/meta_filled.json>
 ```
 
 2) Translate only the `*_en` fields in the JSON. Do not change structure or any `*_zh` fields.
@@ -23,7 +23,10 @@ python meta/extract_meta_request.py --source <path/to/main.docx> --json-out <pat
 3) Render the docx and delete the JSON:
 
 ```bash
-python meta/render_meta.py --template templates/meta_template.docx --input <path/to/meta_filled.json> --output <path/to/meta_original.docx>
+~/python/word/.venv/bin/python ~/python/word/generate_meta.py \
+  --template ~/python/word/templates/meta_template.docx \
+  --input <path/to/meta_filled.json> \
+  --output <path/to/meta_original.docx>
 rm -f <path/to/meta_filled.json>
 ```
 
