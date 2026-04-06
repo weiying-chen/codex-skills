@@ -15,3 +15,9 @@ description: Translate Chinese text into natural, smooth English
 - Restructure sentences for natural English flow, even if it changes the original sentence order
 - Preserve meaning, tone, names, numbers, and key details
 - Do not add or remove factual content
+- Never omit or generalize specific terms; translate them explicitly
+
+## Glossary
+
+- 中醫 → traditional Chinese medicine
+- 證嚴上人 → Venerable Master Cheng Yen
