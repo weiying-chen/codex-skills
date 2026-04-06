@@ -17,7 +17,12 @@ description: Translate Chinese text into natural, smooth English
 - Do not add or remove factual content
 - Never omit or generalize specific terms; translate them explicitly
 
-## Glossary
+## Output
+- Only include the English translation
+- Do not include the original Chinese or any explanations
+- Use a single paragraph
+- Copy the translation to the clipboard using `printf '%s' "<translation>" ｜ wl-copy`.
 
+## Glossary
 - 中醫 → traditional Chinese medicine
 - 證嚴上人 → Venerable Master Cheng Yen
