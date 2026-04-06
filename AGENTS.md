@@ -17,7 +17,8 @@
 - No test framework or coverage requirements are present. If you add tests, document how to run them here and colocate them under the relevant skill directory.
 
 ## Commit & Pull Request Guidelines
-- This repository does not include Git history in the workspace, so no commit message conventions are available.
+- Use short commit messages in sentence case (only the first word capitalized).
+- Do not use Conventional Commits prefixes (e.g. `feat:`, `fix:`).
 - If you open a PR, include a brief summary of the skill changes and any manual verification steps (e.g., the command you ran).
 
 ## Security & Configuration Tips
