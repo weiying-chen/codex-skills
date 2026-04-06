@@ -1,0 +1,4 @@
+interface:
+  display_name: "TL"
+  short_description: "Natural, smooth translation with $tl"
+  default_prompt: "$tl "
