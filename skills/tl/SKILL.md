@@ -26,3 +26,4 @@ description: Translate Chinese text into natural, smooth English
 ## Glossary
 - 中醫 → traditional Chinese medicine
 - 證嚴上人 → Venerable Master Cheng Yen
+- 不舒服 → uncomfortable / not feeling well / discomfort (may include mild pain)
