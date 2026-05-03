@@ -1,4 +1,4 @@
 interface:
   display_name: "TL"
-  short_description: "Natural, smooth translation with $tl"
+  short_description: "Translate Chinese text into natural, smooth English"
   default_prompt: "$tl "
