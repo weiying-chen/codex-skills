@@ -60,7 +60,7 @@ def main() -> None:
     if missing:
         raise ValueError(f"Missing required config keys: {', '.join(missing)}")
 
-    variation_level = cfg.get("variation_level", "low")
+    variation_level = cfg.get("variation_level", "medium")
     if variation_level not in VARIATION_PROFILES:
         raise ValueError("variation_level must be one of: low, medium, high")
     profiles = VARIATION_PROFILES[variation_level]
