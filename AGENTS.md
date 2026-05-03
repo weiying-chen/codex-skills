@@ -14,7 +14,8 @@
 - Filenames: use lowercase with hyphens for skill folders (e.g., `watch-file-wl-copy`).
 
 ## Testing Guidelines
-- No test framework or coverage requirements are present. If you add tests, document how to run them here and colocate them under the relevant skill directory.
+- Run skill tests with `python3 -m unittest discover -s skills/img-gen/tests` when changing `skills/img-gen/scripts/`.
+- If you add tests for another skill, document how to run them here and colocate them under the relevant skill directory.
 
 ## Commit & Pull Request Guidelines
 - Use short commit messages in sentence case (only the first word capitalized).
