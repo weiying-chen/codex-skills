@@ -1,0 +1,21 @@
+{
+  "summary": {
+    "total": 1,
+    "ok": 1,
+    "fail": 0,
+    "missing": 0,
+    "error": 0
+  },
+  "results": [
+    {
+      "output_file": "output/run-001/corgi_01.png",
+      "breed": "Corgi",
+      "index": 1,
+      "status": "ok",
+      "mode": "RGBA",
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "subject_ratio": 0.3987202052349924
+    }
+  ]
+}
