@@ -64,6 +64,11 @@ def main():
     ], cwd=Path.cwd())
 
     run([
+        'python3', str(here / 'normalize_canvas.py'),
+        '--jobs', args.jobs,
+    ], cwd=Path.cwd())
+
+    run([
         'python3', str(here / 'verify_alpha.py'),
         '--jobs', args.jobs,
         '--report', args.report,

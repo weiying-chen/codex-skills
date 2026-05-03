@@ -4,6 +4,17 @@ import json
 import re
 from pathlib import Path
 
+VARIATION_PROFILES = [
+    "Pose: wider stance with weight on left leg. Camera: low-angle three-quarter view. Expression: open-mouth grin.",
+    "Pose: narrower stance with slight torso twist right. Camera: eye-level three-quarter view. Expression: focused grin.",
+    "Pose: raised front paw with mild lean forward. Camera: slightly closer framing. Expression: confident smile.",
+    "Pose: slight backward lean with guitar neck higher. Camera: medium framing with more headroom. Expression: energetic open-mouth shout.",
+    "Pose: subtle side-step posture with hips rotated left. Camera: mild top-down angle. Expression: relaxed smile.",
+    "Pose: centered stance with balanced legs. Camera: slightly wider framing. Expression: playful grin with head tilt.",
+    "Pose: mild diagonal stance with right shoulder forward. Camera: eye-level medium-close framing. Expression: excited smile.",
+    "Pose: slight crouch with dynamic arm angle. Camera: low-medium angle. Expression: spirited grin.",
+]
+
 
 def slugify(text: str) -> str:
     text = text.strip().lower()
@@ -45,7 +56,14 @@ def main() -> None:
         for i in range(1, int(cfg["images_per_breed"]) + 1):
             filename = cfg["file_pattern"].format(breed_slug=breed_slug, index=i)
             output_file = str(output_dir / filename)
-            prompt = cfg["prompt_template"].format(breed=breed)
+            base_prompt = cfg["prompt_template"].format(breed=breed)
+            profile = VARIATION_PROFILES[(i - 1) % len(VARIATION_PROFILES)]
+            variation_clause = (
+                " Keep the same art style and character identity, but do not reuse the exact same composition."
+                f" Required controlled variation: {profile}"
+                " Keep changes moderate (not extreme)."
+            )
+            prompt = base_prompt + variation_clause
 
             jobs.append(
                 {
