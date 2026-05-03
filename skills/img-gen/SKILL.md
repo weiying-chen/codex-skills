@@ -53,6 +53,7 @@ Set `variation_level` in `config.json`:
 - `medium`: clearly different pose/camera/expression while preserving style.
 - `high`: stronger compositional differences.
 Use `subjects` and `images_per_subject` in config.
+Set `skip_existing` to `true` to generate only missing output files. Keep good images, delete rejected images, then rerun job creation to fill the gaps. Set it to `false` to create jobs for every configured output, including files that already exist.
 Use `canvas_size` object to set final output canvas dimensions:
 
 ```json

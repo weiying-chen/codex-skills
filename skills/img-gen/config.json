@@ -1,6 +1,7 @@
 {
   "reference_image": "./input/reference.png",
   "output_dir": "./output/run-001",
+  "skip_existing": true,
   "subjects": [
     "Corgi",
     "Shiba Inu"

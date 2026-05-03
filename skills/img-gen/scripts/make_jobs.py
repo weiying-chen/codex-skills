@@ -75,12 +75,18 @@ def main() -> None:
 
     jobs = []
     output_dir = Path(cfg["output_dir"])
+    skip_existing = bool(cfg.get("skip_existing", False))
+    skipped = 0
 
     for subject in cfg["subjects"]:
         subject_slug = slugify(subject)
         for i in range(1, int(cfg["images_per_subject"]) + 1):
             filename = cfg["file_pattern"].format(subject_slug=subject_slug, index=i)
-            output_file = str(output_dir / filename)
+            output_path = output_dir / filename
+            if skip_existing and output_path.exists():
+                skipped += 1
+                continue
+            output_file = str(output_path)
             base_prompt = cfg["prompt_template"].replace("{subject}", subject)
             profile = profiles[(i - 1) % len(profiles)]
             variation_clause = (
@@ -107,7 +113,10 @@ def main() -> None:
         json.dump({"jobs": jobs}, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
-    print(f"Wrote {len(jobs)} jobs to {out_path}")
+    message = f"Wrote {len(jobs)} jobs to {out_path}"
+    if skip_existing:
+        message += f" (skipped {skipped} existing outputs)"
+    print(message)
 
 
 if __name__ == "__main__":
