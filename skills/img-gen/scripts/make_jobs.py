@@ -4,16 +4,28 @@ import json
 import re
 from pathlib import Path
 
-VARIATION_PROFILES = [
-    "Pose: wider stance with weight on left leg. Camera: low-angle three-quarter view. Expression: open-mouth grin.",
-    "Pose: narrower stance with slight torso twist right. Camera: eye-level three-quarter view. Expression: focused grin.",
-    "Pose: raised front paw with mild lean forward. Camera: slightly closer framing. Expression: confident smile.",
-    "Pose: slight backward lean with guitar neck higher. Camera: medium framing with more headroom. Expression: energetic open-mouth shout.",
-    "Pose: subtle side-step posture with hips rotated left. Camera: mild top-down angle. Expression: relaxed smile.",
-    "Pose: centered stance with balanced legs. Camera: slightly wider framing. Expression: playful grin with head tilt.",
-    "Pose: mild diagonal stance with right shoulder forward. Camera: eye-level medium-close framing. Expression: excited smile.",
-    "Pose: slight crouch with dynamic arm angle. Camera: low-medium angle. Expression: spirited grin.",
-]
+VARIATION_PROFILES = {
+    "low": [
+        "Pose: slight stance adjustment. Camera: minor framing shift. Expression: subtle smile variation.",
+        "Pose: mild torso angle change. Camera: slight crop offset. Expression: small expression shift.",
+        "Pose: minor limb placement change. Camera: subtle perspective tweak. Expression: gentle grin variation.",
+        "Pose: slight body tilt change. Camera: modest headroom difference. Expression: restrained open-mouth variation.",
+    ],
+    "medium": [
+        "Pose: wider stance with weight shifted left. Camera: low-angle three-quarter view. Expression: open-mouth smile.",
+        "Pose: narrower stance with slight torso twist right. Camera: eye-level three-quarter view. Expression: focused smile.",
+        "Pose: raised front appendage with mild lean forward. Camera: slightly closer framing. Expression: confident smile.",
+        "Pose: slight backward lean with upper-body angle lifted. Camera: medium framing with more headroom. Expression: energetic open-mouth expression.",
+        "Pose: subtle side-step posture with hips rotated left. Camera: mild top-down angle. Expression: relaxed smile.",
+    ],
+    "high": [
+        "Pose: strong diagonal stance with dynamic appendage separation. Camera: pronounced low-angle view. Expression: high-energy open-mouth expression.",
+        "Pose: deep side-step with torso rotation. Camera: close three-quarter framing. Expression: intense smile.",
+        "Pose: lifted front appendage and forward lean. Camera: dramatic perspective shift. Expression: bold confident smile.",
+        "Pose: backward lean with elevated upper-body angle. Camera: wider framing and stronger headroom change. Expression: animated expression.",
+        "Pose: asymmetric stance with clear silhouette change. Camera: top-down three-quarter variation. Expression: playful expressive smile.",
+    ],
+}
 
 
 def slugify(text: str) -> str:
@@ -48,6 +60,11 @@ def main() -> None:
     if missing:
         raise ValueError(f"Missing required config keys: {', '.join(missing)}")
 
+    variation_level = cfg.get("variation_level", "low")
+    if variation_level not in VARIATION_PROFILES:
+        raise ValueError("variation_level must be one of: low, medium, high")
+    profiles = VARIATION_PROFILES[variation_level]
+
     jobs = []
     output_dir = Path(cfg["output_dir"])
 
@@ -57,11 +74,11 @@ def main() -> None:
             filename = cfg["file_pattern"].format(breed_slug=breed_slug, index=i)
             output_file = str(output_dir / filename)
             base_prompt = cfg["prompt_template"].format(breed=breed)
-            profile = VARIATION_PROFILES[(i - 1) % len(VARIATION_PROFILES)]
+            profile = profiles[(i - 1) % len(profiles)]
             variation_clause = (
                 " Keep the same art style and character identity, but do not reuse the exact same composition."
                 f" Required controlled variation: {profile}"
-                " Keep changes moderate (not extreme)."
+                f" Keep variation intensity at {variation_level} level."
             )
             prompt = base_prompt + variation_clause
 
