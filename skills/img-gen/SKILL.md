@@ -47,6 +47,21 @@ uv pip install -r requirements.txt
 - `scripts/verify_alpha.py`: strict alpha checks.
 - `scripts/finalize_run.py`: one command for process + verify.
 
+## Variation Level
+Set `variation_level` in `config.json`:
+- `low`: subtle differences.
+- `medium`: clearly different pose/camera/expression while preserving style.
+- `high`: stronger compositional differences.
+Use `subjects` and `images_per_subject` in config.
+Use `canvas_size` object to set final output canvas dimensions:
+
+```json
+"canvas_size": {
+  "width": 1024,
+  "height": 1024
+}
+```
+
 ## Standard commands
 
 ```bash

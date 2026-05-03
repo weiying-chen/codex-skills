@@ -129,7 +129,7 @@ def main() -> None:
         results.append(
             {
                 "output_file": str(out),
-                "breed": job.get("breed"),
+                "subject": job.get("subject"),
                 "index": job.get("index"),
                 **check,
             }

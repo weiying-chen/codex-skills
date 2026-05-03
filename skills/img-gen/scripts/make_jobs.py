@@ -49,9 +49,9 @@ def main() -> None:
     required = [
         "reference_image",
         "output_dir",
-        "breeds",
-        "images_per_breed",
-        "size",
+        "subjects",
+        "images_per_subject",
+        "canvas_size",
         "delay_seconds",
         "prompt_template",
         "file_pattern",
@@ -65,15 +65,23 @@ def main() -> None:
         raise ValueError("variation_level must be one of: low, medium, high")
     profiles = VARIATION_PROFILES[variation_level]
 
+    canvas = cfg["canvas_size"]
+    if not isinstance(canvas, dict) or "width" not in canvas or "height" not in canvas:
+        raise ValueError("canvas_size must be an object with width and height")
+    canvas_w = int(canvas["width"])
+    canvas_h = int(canvas["height"])
+    if canvas_w <= 0 or canvas_h <= 0:
+        raise ValueError("canvas_size.width and canvas_size.height must be positive integers")
+
     jobs = []
     output_dir = Path(cfg["output_dir"])
 
-    for breed in cfg["breeds"]:
-        breed_slug = slugify(breed)
-        for i in range(1, int(cfg["images_per_breed"]) + 1):
-            filename = cfg["file_pattern"].format(breed_slug=breed_slug, index=i)
+    for subject in cfg["subjects"]:
+        subject_slug = slugify(subject)
+        for i in range(1, int(cfg["images_per_subject"]) + 1):
+            filename = cfg["file_pattern"].format(subject_slug=subject_slug, index=i)
             output_file = str(output_dir / filename)
-            base_prompt = cfg["prompt_template"].format(breed=breed)
+            base_prompt = cfg["prompt_template"].replace("{subject}", subject)
             profile = profiles[(i - 1) % len(profiles)]
             variation_clause = (
                 " Keep the same art style and character identity, but do not reuse the exact same composition."
@@ -84,9 +92,9 @@ def main() -> None:
 
             jobs.append(
                 {
-                    "breed": breed,
+                    "subject": subject,
                     "index": i,
-                    "size": cfg["size"],
+                    "canvas_size": {"width": canvas_w, "height": canvas_h},
                     "delay_seconds": cfg["delay_seconds"],
                     "reference_image": cfg["reference_image"],
                     "prompt": prompt,

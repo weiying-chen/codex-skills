@@ -1,13 +1,17 @@
 {
   "reference_image": "./input/reference.png",
   "output_dir": "./output/run-001",
-  "breeds": [
+  "subjects": [
     "Corgi",
-    "Shiba Inu",
+    "Shiba Inu"
   ],
-  "images_per_breed": 1,
-  "size": "1024x1024",
+  "images_per_subject": 3,
+  "variation_level": "medium",
+  "canvas_size": {
+    "width": 1024,
+    "height": 1024
+  },
   "delay_seconds": 2,
-  "prompt_template": "Same style and composition as the reference image, replace the main character with a {breed}. Full body, isolated subject. Use a perfectly flat solid #00FF00 background only. No gradients, no texture, no floor, no shadow, no text.",
-  "file_pattern": "{breed_slug}_{index:02d}.png"
+  "prompt_template": "Same style and composition as the reference image, replace the main character with a {subject}. Full body, isolated subject. Use a perfectly flat solid #00FF00 background only. No gradients, no texture, no floor, no shadow, no text.",
+  "file_pattern": "{subject_slug}_{index:02d}.png"
 }
