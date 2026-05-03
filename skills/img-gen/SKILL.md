@@ -58,8 +58,18 @@ Use `canvas_size` object to set final output canvas dimensions:
 
 ```json
 "canvas_size": {
-  "width": 1024,
-  "height": 1024
+  "width": 2624,
+  "height": 3152
+}
+```
+
+Set `final_size` to upscale after transparency cleanup and verification:
+
+```json
+"final_size": {
+  "width": 4500,
+  "height": 5400,
+  "dpi": 300
 }
 ```
 

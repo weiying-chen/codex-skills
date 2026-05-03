@@ -158,6 +158,21 @@ class MakeJobsTests(unittest.TestCase):
         self.assertEqual(job["reference_image"], "./input/custom.png")
         self.assertEqual(job["index"], 1)
 
+    def test_job_includes_optional_final_size(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            config = self.base_config(False)
+            config["subjects"] = ["Corgi"]
+            config["images_per_subject"] = 1
+            config["final_size"] = {"width": 4500, "height": 5400, "dpi": 300}
+
+            jobs_doc, _ = self.run_make_jobs(tmp_path, config)
+
+        self.assertEqual(
+            jobs_doc["jobs"][0]["final_size"],
+            {"width": 4500, "height": 5400, "dpi": 300},
+        )
+
     def test_variation_level_defaults_to_medium(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
@@ -229,6 +244,20 @@ class MakeJobsTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn(
             "canvas_size.width and canvas_size.height must be positive integers",
+            result.stderr,
+        )
+
+    def test_final_size_dimensions_and_dpi_must_be_positive(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            config = self.base_config(False)
+            config["final_size"] = {"width": 4500, "height": 0, "dpi": 300}
+
+            result = self.run_make_jobs_failure(tmp_path, config)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "final_size.width, final_size.height, and final_size.dpi must be positive integers",
             result.stderr,
         )
 

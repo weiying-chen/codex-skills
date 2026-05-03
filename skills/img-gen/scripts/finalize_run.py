@@ -76,6 +76,19 @@ def main():
         '--fail-on-error',
     ], cwd=Path.cwd())
 
+    run([
+        'python3', str(here / 'upscale_outputs.py'),
+        '--jobs', args.jobs,
+    ], cwd=Path.cwd())
+
+    run([
+        'python3', str(here / 'verify_alpha.py'),
+        '--jobs', args.jobs,
+        '--report', args.report,
+        '--min-subject-ratio', str(args.min_subject_ratio),
+        '--fail-on-error',
+    ], cwd=Path.cwd())
+
     print('finalize_run: transparency enforcement + strict verify passed')
 
 

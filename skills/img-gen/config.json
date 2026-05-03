@@ -12,6 +12,11 @@
     "width": 2624,
     "height": 3152
   },
+  "final_size": {
+    "width": 4500,
+    "height": 5400,
+    "dpi": 300
+  },
   "delay_seconds": 2,
   "prompt_template": "Same style and composition as the reference image, replace the main character with a {subject}. Full body, isolated subject. Use a perfectly flat solid #00FF00 background only. No gradients, no texture, no floor, no shadow, no text.",
   "file_pattern": "{subject_slug}_{index:02d}.png"

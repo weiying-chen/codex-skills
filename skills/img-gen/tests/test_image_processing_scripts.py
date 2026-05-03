@@ -16,24 +16,25 @@ class ImageProcessingScriptTests(unittest.TestCase):
     def script(self, name: str) -> str:
         return str(SCRIPT_DIR / name)
 
-    def write_jobs(self, tmp_path: Path, image_path: Path, canvas_size=None) -> Path:
+    def write_jobs(self, tmp_path: Path, image_path: Path, canvas_size=None, final_size=None) -> Path:
         jobs_path = tmp_path / "jobs.json"
         if canvas_size is None:
             with Image.open(image_path) as img:
                 canvas = {"width": img.width, "height": img.height}
         else:
             canvas = canvas_size
+        job = {
+            "subject": "Fixture",
+            "index": 1,
+            "canvas_size": canvas,
+            "output_file": str(image_path),
+        }
+        if final_size is not None:
+            job["final_size"] = final_size
         jobs_path.write_text(
             json.dumps(
                 {
-                    "jobs": [
-                        {
-                            "subject": "Fixture",
-                            "index": 1,
-                            "canvas_size": canvas,
-                            "output_file": str(image_path),
-                        }
-                    ]
+                    "jobs": [job]
                 }
             ),
             encoding="utf-8",
@@ -229,6 +230,30 @@ class ImageProcessingScriptTests(unittest.TestCase):
         self.assertEqual(fixed.getpixel((0, 0))[3], 0)
         self.assertGreater(fixed.getpixel((4, 4))[3], 0)
 
+    def test_upscale_outputs_applies_final_size_and_dpi(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            image_path = tmp_path / "upscale.png"
+            img = Image.new("RGBA", (4, 6), (0, 0, 0, 0))
+            for y in range(1, 5):
+                for x in range(1, 3):
+                    img.putpixel((x, y), (255, 0, 0, 255))
+            img.save(image_path)
+            jobs_path = self.write_jobs(
+                tmp_path,
+                image_path,
+                {"width": 4, "height": 6},
+                {"width": 8, "height": 12, "dpi": 300},
+            )
+
+            self.run_script(tmp_path, [self.script("upscale_outputs.py"), "--jobs", str(jobs_path)])
+            fixed = Image.open(image_path).convert("RGBA")
+
+        self.assertEqual(fixed.size, (8, 12))
+        self.assertEqual(fixed.info.get("dpi"), (299.9994, 299.9994))
+        self.assertEqual(fixed.getpixel((0, 0))[3], 0)
+        self.assertGreater(fixed.getpixel((4, 6))[3], 0)
+
     def test_finalize_run_auto_smoke_processes_and_verifies(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
@@ -263,6 +288,47 @@ class ImageProcessingScriptTests(unittest.TestCase):
 
         self.assertIn("strict verify passed", result.stdout)
         self.assertEqual(report["summary"]["ok"], 1)
+
+    def test_finalize_run_applies_final_size_after_transparency_verification(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            image_path = tmp_path / "final-size.png"
+            img = Image.new("RGBA", (20, 20), (255, 255, 255, 255))
+            for y in range(6, 14):
+                for x in range(6, 14):
+                    img.putpixel((x, y), (255, 0, 0, 255))
+            img.save(image_path)
+            jobs_path = self.write_jobs(
+                tmp_path,
+                image_path,
+                {"width": 20, "height": 20},
+                {"width": 40, "height": 40, "dpi": 300},
+            )
+            report_path = tmp_path / "alpha_report.json"
+
+            result = self.run_script(
+                tmp_path,
+                [
+                    self.script("finalize_run.py"),
+                    "--jobs",
+                    str(jobs_path),
+                    "--report",
+                    str(report_path),
+                    "--mode",
+                    "auto",
+                    "--threshold",
+                    "0",
+                    "--min-island-pixels",
+                    "1",
+                    "--min-subject-ratio",
+                    "0.1",
+                ],
+            )
+            fixed = Image.open(image_path).convert("RGBA")
+
+        self.assertIn("final export passed", result.stdout)
+        self.assertEqual(fixed.size, (40, 40))
+        self.assertEqual(fixed.info.get("dpi"), (299.9994, 299.9994))
 
     def test_check_deps_passes_when_required_dependencies_exist(self):
         with tempfile.TemporaryDirectory() as tmp:

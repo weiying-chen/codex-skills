@@ -34,6 +34,21 @@ def slugify(text: str) -> str:
     return text.strip("-")
 
 
+def validate_size(name: str, value: dict, required_keys: list[str]) -> dict:
+    if not isinstance(value, dict) or any(k not in value for k in required_keys):
+        joined = " and ".join(required_keys)
+        raise ValueError(f"{name} must be an object with {joined}")
+    parsed = {k: int(value[k]) for k in required_keys}
+    if any(v <= 0 for v in parsed.values()):
+        if len(required_keys) == 2:
+            fields = f"{name}.{required_keys[0]} and {name}.{required_keys[1]}"
+        else:
+            fields = ", ".join(f"{name}.{k}" for k in required_keys[:-1])
+            fields = f"{fields}, and {name}.{required_keys[-1]}"
+        raise ValueError(f"{fields} must be positive integers")
+    return parsed
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Create deterministic image generation jobs from config.json")
     parser.add_argument("--config", required=True, help="Path to config.json")
@@ -65,13 +80,12 @@ def main() -> None:
         raise ValueError("variation_level must be one of: low, medium, high")
     profiles = VARIATION_PROFILES[variation_level]
 
-    canvas = cfg["canvas_size"]
-    if not isinstance(canvas, dict) or "width" not in canvas or "height" not in canvas:
-        raise ValueError("canvas_size must be an object with width and height")
-    canvas_w = int(canvas["width"])
-    canvas_h = int(canvas["height"])
-    if canvas_w <= 0 or canvas_h <= 0:
-        raise ValueError("canvas_size.width and canvas_size.height must be positive integers")
+    canvas = validate_size("canvas_size", cfg["canvas_size"], ["width", "height"])
+    canvas_w = canvas["width"]
+    canvas_h = canvas["height"]
+    final_size = None
+    if "final_size" in cfg:
+        final_size = validate_size("final_size", cfg["final_size"], ["width", "height", "dpi"])
 
     jobs = []
     output_dir = Path(cfg["output_dir"])
@@ -96,17 +110,18 @@ def main() -> None:
             )
             prompt = base_prompt + variation_clause
 
-            jobs.append(
-                {
-                    "subject": subject,
-                    "index": i,
-                    "canvas_size": {"width": canvas_w, "height": canvas_h},
-                    "delay_seconds": cfg["delay_seconds"],
-                    "reference_image": cfg["reference_image"],
-                    "prompt": prompt,
-                    "output_file": output_file,
-                }
-            )
+            job = {
+                "subject": subject,
+                "index": i,
+                "canvas_size": {"width": canvas_w, "height": canvas_h},
+                "delay_seconds": cfg["delay_seconds"],
+                "reference_image": cfg["reference_image"],
+                "prompt": prompt,
+                "output_file": output_file,
+            }
+            if final_size is not None:
+                job["final_size"] = final_size
+            jobs.append(job)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8") as f:
